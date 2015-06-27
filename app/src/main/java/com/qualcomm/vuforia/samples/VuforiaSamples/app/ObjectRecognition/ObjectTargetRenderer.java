@@ -7,11 +7,6 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 
 package com.qualcomm.vuforia.samples.VuforiaSamples.app.ObjectRecognition;
 
-import java.util.Vector;
-
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -30,10 +25,14 @@ import com.qualcomm.vuforia.Vuforia;
 import com.qualcomm.vuforia.samples.SampleApplication.SampleApplicationSession;
 import com.qualcomm.vuforia.samples.SampleApplication.utils.CubeObject;
 import com.qualcomm.vuforia.samples.SampleApplication.utils.CubeShaders;
-import com.qualcomm.vuforia.samples.SampleApplication.utils.LineShaders;
 import com.qualcomm.vuforia.samples.SampleApplication.utils.LoadingDialogHandler;
 import com.qualcomm.vuforia.samples.SampleApplication.utils.SampleUtils;
 import com.qualcomm.vuforia.samples.SampleApplication.utils.Texture;
+
+import java.util.Vector;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
 
 // The renderer class for the ImageTargets sample. 
@@ -63,10 +62,13 @@ public class ObjectTargetRenderer implements GLSurfaceView.Renderer
     private int colorHandle;
     
     private CubeObject mCubeObject;
-    
+
     private Renderer mRenderer;
     
     boolean mIsActive = false;
+
+    boolean increasing =true;
+    float i=0;
     
     
     public ObjectTargetRenderer(ObjectTargets activity,
@@ -118,7 +120,7 @@ public class ObjectTargetRenderer implements GLSurfaceView.Renderer
     private void initRendering()
     {
         mCubeObject = new CubeObject();
-        
+
         mRenderer = Renderer.getInstance();
         
         // Now generate the OpenGL texture objects and add settings
@@ -129,7 +131,7 @@ public class ObjectTargetRenderer implements GLSurfaceView.Renderer
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
                 GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
-                GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+                    GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
             GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA,
                 t.mWidth, t.mHeight, 0, GLES20.GL_RGBA,
                 GLES20.GL_UNSIGNED_BYTE, t.mData);
@@ -137,7 +139,7 @@ public class ObjectTargetRenderer implements GLSurfaceView.Renderer
         SampleUtils.checkGLError("ObjectTarget GLInitRendering");
         
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, Vuforia.requiresAlpha() ? 0.0f
-            : 1.0f);
+                : 1.0f);
         
         shaderProgramID = SampleUtils.createProgramFromShaderSrc(
             CubeShaders.CUBE_MESH_VERTEX_SHADER,
@@ -205,21 +207,37 @@ public class ObjectTargetRenderer implements GLSurfaceView.Renderer
             float[] modelViewProjection = new float[16];
             
             float[] objectSize = objectTarget.getSize().getData();
+
+            if(increasing){
+                i+=0.1f;
+                if(i>=0.6f){
+                    increasing=false;
+                }
+            }else{
+                i-=0.1f;
+                if(i<=-0.1f){
+                    increasing=true;
+                }
+            }
+
+            objectSize[0]*=(1+i);
+            objectSize[1]*=(1+i);
+            objectSize[2]*=(1+i);
+
+            Matrix.translateM(modelViewMatrix, 0, objectSize[0] / 2, objectSize[1] / 2,
+                    objectSize[2] / 2);
             
-            Matrix.translateM(modelViewMatrix, 0, objectSize[0]/2, objectSize[1]/2,
-                objectSize[2]/2);
-            
-            Matrix.scaleM(modelViewMatrix, 0, objectSize[0]/2,
-                objectSize[1]/2, objectSize[2]/2);
+            Matrix.scaleM(modelViewMatrix, 0, objectSize[0] / 2,
+                    objectSize[1] / 2, objectSize[2] / 2);
             
             Matrix.multiplyMM(modelViewProjection, 0, vuforiaAppSession
-                .getProjectionMatrix().getData(), 0, modelViewMatrix, 0);
+                    .getProjectionMatrix().getData(), 0, modelViewMatrix, 0);
             
             // activatrigidBodyTarget.xmle the shader program and bind the vertex/normal/tex coords
             GLES20.glUseProgram(shaderProgramID);
             
             GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT,
-                false, 0, mCubeObject.getVertices());
+                    false, 0, mCubeObject.getVertices());
             GLES20.glUniform1f(opacityHandle, 0.3f);
             GLES20.glUniform3f(colorHandle, 0.0f, 0.0f, 0.0f);
             GLES20.glVertexAttribPointer(textureCoordHandle, 2,
