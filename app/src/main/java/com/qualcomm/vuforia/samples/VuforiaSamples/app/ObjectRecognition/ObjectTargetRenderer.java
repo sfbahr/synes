@@ -7,6 +7,7 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 
 package com.qualcomm.vuforia.samples.VuforiaSamples.app.ObjectRecognition;
 
+import android.media.MediaRecorder;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -29,6 +30,7 @@ import com.qualcomm.vuforia.samples.SampleApplication.utils.LoadingDialogHandler
 import com.qualcomm.vuforia.samples.SampleApplication.utils.SampleUtils;
 import com.qualcomm.vuforia.samples.SampleApplication.utils.Texture;
 
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -69,6 +71,7 @@ public class ObjectTargetRenderer implements GLSurfaceView.Renderer
 
     boolean increasing =true;
     float i=0;
+    private MediaRecorder recorder;
     
     
     public ObjectTargetRenderer(ObjectTargets activity,
@@ -76,6 +79,18 @@ public class ObjectTargetRenderer implements GLSurfaceView.Renderer
     {
         mActivity = activity;
         vuforiaAppSession = session;
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+        recorder.setOutputFile("/dev/null");
+
+        try {
+            recorder.prepare();
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+        recorder.start();
+        recorder.getMaxAmplitude();
     }
     
     
@@ -169,6 +184,9 @@ public class ObjectTargetRenderer implements GLSurfaceView.Renderer
     // The render function.
     private void renderFrame()
     {
+        int amp = recorder.getMaxAmplitude();
+        System.out.println(amp);
+
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         
         State state = mRenderer.begin();
