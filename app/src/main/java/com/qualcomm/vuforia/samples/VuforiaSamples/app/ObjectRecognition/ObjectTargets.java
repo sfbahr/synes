@@ -7,8 +7,6 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 
 package com.qualcomm.vuforia.samples.VuforiaSamples.app.ObjectRecognition;
 
-import java.util.Vector;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -35,8 +33,8 @@ import com.qualcomm.vuforia.CameraDevice;
 import com.qualcomm.vuforia.DataSet;
 import com.qualcomm.vuforia.HINT;
 import com.qualcomm.vuforia.ObjectTracker;
-import com.qualcomm.vuforia.State;
 import com.qualcomm.vuforia.STORAGE_TYPE;
+import com.qualcomm.vuforia.State;
 import com.qualcomm.vuforia.Trackable;
 import com.qualcomm.vuforia.Tracker;
 import com.qualcomm.vuforia.TrackerManager;
@@ -51,6 +49,8 @@ import com.qualcomm.vuforia.samples.VuforiaSamples.R;
 import com.qualcomm.vuforia.samples.VuforiaSamples.ui.SampleAppMenu.SampleAppMenu;
 import com.qualcomm.vuforia.samples.VuforiaSamples.ui.SampleAppMenu.SampleAppMenuGroup;
 import com.qualcomm.vuforia.samples.VuforiaSamples.ui.SampleAppMenu.SampleAppMenuInterface;
+
+import java.util.Vector;
 
 
 public class ObjectTargets extends Activity implements SampleApplicationControl,
@@ -324,7 +324,7 @@ public class ObjectTargets extends Activity implements SampleApplicationControl,
         if (mCurrentDataset == null)
             return false;
         
-        if (!mCurrentDataset.load("ObjectRecognition/objectTarget.xml",
+        if (!mCurrentDataset.load("Synes_OT.xml",
             STORAGE_TYPE.STORAGE_APPRESOURCE))
             return false;
         
