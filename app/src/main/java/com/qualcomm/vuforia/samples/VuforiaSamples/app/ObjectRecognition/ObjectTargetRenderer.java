@@ -79,6 +79,7 @@ public class ObjectTargetRenderer implements GLSurfaceView.Renderer
     {
         mActivity = activity;
         vuforiaAppSession = session;
+        recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
