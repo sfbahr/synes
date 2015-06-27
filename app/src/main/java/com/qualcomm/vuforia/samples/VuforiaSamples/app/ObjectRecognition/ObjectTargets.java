@@ -24,7 +24,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -89,7 +92,9 @@ public class ObjectTargets extends Activity implements SampleApplicationControl,
     private AlertDialog mErrorDialog;
     
     boolean mIsDroidDevice = false;
-    
+
+    ImageView imageView;
+
     
     // Called when the activity first starts or the user navigates back to an
     // activity.
@@ -98,7 +103,9 @@ public class ObjectTargets extends Activity implements SampleApplicationControl,
     {
         Log.d(LOGTAG, "onCreate");
         super.onCreate(savedInstanceState);
-        
+
+
+
         vuforiaAppSession = new SampleApplicationSession(this);
         
         startLoadingAnimation();
@@ -114,7 +121,8 @@ public class ObjectTargets extends Activity implements SampleApplicationControl,
         
         mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
             "droid");
-        
+
+
     }
     
     
@@ -190,12 +198,10 @@ public class ObjectTargets extends Activity implements SampleApplicationControl,
         }
         
         // Resume the GL view:
-        if (mGlView != null)
-        {
+        if (mGlView != null) {
             mGlView.setVisibility(View.VISIBLE);
             mGlView.onResume();
         }
-        
     }
     
     
@@ -292,10 +298,10 @@ public class ObjectTargets extends Activity implements SampleApplicationControl,
         LayoutInflater inflater = LayoutInflater.from(this);
         mUILayout = (RelativeLayout) inflater.inflate(R.layout.camera_overlay,
             null, false);
-        
+
         mUILayout.setVisibility(View.VISIBLE);
         mUILayout.setBackgroundColor(Color.BLACK);
-        
+
         // Gets a reference to the loading dialog
         loadingDialogHandler.mLoadingDialogContainer = mUILayout
             .findViewById(R.id.loading_indicator);
@@ -307,7 +313,11 @@ public class ObjectTargets extends Activity implements SampleApplicationControl,
         // Adds the inflated layout to the view
         addContentView(mUILayout, new LayoutParams(LayoutParams.MATCH_PARENT,
             LayoutParams.MATCH_PARENT));
-        
+
+        imageView = (ImageView) this.findViewById(R.id.image);
+        Animation pulse = AnimationUtils.loadAnimation(this, R.anim.pulse);
+        imageView.startAnimation(pulse);
+        imageView.setVisibility(View.INVISIBLE);
     }
     
     
