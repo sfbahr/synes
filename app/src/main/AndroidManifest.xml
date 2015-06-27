@@ -49,7 +49,10 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+
     <!--
       NOTE: The setting 'android:launchMode="singleTask"' makes sure
       that the activity can begin only one task and the device can hold only

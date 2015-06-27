@@ -124,6 +124,9 @@ public class ObjectTargets extends Activity implements SampleApplicationControl,
     {
         mTextures.add(Texture.loadTextureFromApk(
             "ObjectRecognition/CubeWireframe.png", getAssets()));
+        Vector<Texture> texture = new Vector<Texture>();
+        texture.add(Texture.loadTextureFromApk(
+                "ObjectRecognition/CubeWireframe.png", getAssets()));
     }
     
     
@@ -277,7 +280,7 @@ public class ObjectTargets extends Activity implements SampleApplicationControl,
         mGlView = new SampleApplicationGLView(this);
         mGlView.init(translucent, depthSize, stencilSize);
         
-        mRenderer = new ObjectTargetRenderer(this, vuforiaAppSession);
+        mRenderer = new ObjectTargetRenderer(this, vuforiaAppSession,getApplicationContext());
         mRenderer.setTextures(mTextures);
         mGlView.setRenderer(mRenderer);
         

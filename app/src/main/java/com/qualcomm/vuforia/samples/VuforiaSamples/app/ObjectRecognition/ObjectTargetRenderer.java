@@ -7,10 +7,12 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 
 package com.qualcomm.vuforia.samples.VuforiaSamples.app.ObjectRecognition;
 
+import android.content.Context;
 import android.media.MediaRecorder;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.os.Vibrator;
 import android.util.Log;
 
 import com.qualcomm.vuforia.Matrix44F;
@@ -69,13 +71,14 @@ public class ObjectTargetRenderer implements GLSurfaceView.Renderer
     
     boolean mIsActive = false;
 
-    boolean increasing =true;
-    float i=0;
+    private Context mContext;
+
     private MediaRecorder recorder;
-    
+    int i=0;
+    double[] amp =new double[3];
     
     public ObjectTargetRenderer(ObjectTargets activity,
-        SampleApplicationSession session)
+        SampleApplicationSession session,Context context)
     {
         mActivity = activity;
         vuforiaAppSession = session;
@@ -92,8 +95,8 @@ public class ObjectTargetRenderer implements GLSurfaceView.Renderer
         }
         recorder.start();
         recorder.getMaxAmplitude();
+        mContext=context;
     }
-    
     
     // Called to draw the current frame.
     @Override
@@ -185,14 +188,12 @@ public class ObjectTargetRenderer implements GLSurfaceView.Renderer
     // The render function.
     private void renderFrame()
     {
-        int amp = recorder.getMaxAmplitude();
-        System.out.println(amp);
-
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         
         State state = mRenderer.begin();
         mRenderer.drawVideoBackground();
-        
+
+
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         
         // handle face culling, we need to detect if we are using reflection
@@ -224,24 +225,27 @@ public class ObjectTargetRenderer implements GLSurfaceView.Renderer
             
             // deal with the modelview and projection matrices
             float[] modelViewProjection = new float[16];
-            
+
             float[] objectSize = objectTarget.getSize().getData();
 
-            if(increasing){
-                i+=0.1f;
-                if(i>=0.6f){
-                    increasing=false;
-                }
-            }else{
-                i-=0.1f;
-                if(i<=-0.1f){
-                    increasing=true;
-                }
+            if(i%3==0) {
+                i=0;
             }
 
-            objectSize[0]*=(1+i);
-            objectSize[1]*=(1+i);
-            objectSize[2]*=(1+i);
+            amp[i] = recorder.getMaxAmplitude() / 30000.0;
+            i++;
+            double avg = (amp[0]+amp[1]+amp[2])/3.0;
+
+            Log.d("Average",String.valueOf(avg));
+            if(avg>0.7) {
+                Vibrator v = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 500 milliseconds
+                v.vibrate(500);
+            }
+
+            objectSize[0]*=(1.0+avg);
+            objectSize[1]*=(1.0+avg);
+            objectSize[2]*=(1.0+avg);
 
             Matrix.translateM(modelViewMatrix, 0, objectSize[0] / 2, objectSize[1] / 2,
                     objectSize[2] / 2);
@@ -260,7 +264,7 @@ public class ObjectTargetRenderer implements GLSurfaceView.Renderer
             GLES20.glUniform1f(opacityHandle, 0.3f);
             GLES20.glUniform3f(colorHandle, 0.0f, 0.0f, 0.0f);
             GLES20.glVertexAttribPointer(textureCoordHandle, 2,
-                GLES20.GL_FLOAT, false, 0, mCubeObject.getTexCoords());
+                    GLES20.GL_FLOAT, false, 0, mCubeObject.getTexCoords());
             GLES20.glVertexAttribPointer(normalHandle, 3, GLES20.GL_FLOAT,
                 false, 0, mCubeObject.getNormals());
                
